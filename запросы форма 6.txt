@@ -1,0 +1,70 @@
+1. всего количество сотрудников
+
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id
+WHERE     (TableСотрудник.[дата увольнения] IS NULL)
+GROUP BY TableСпециальность.классификатор
+
+2. всего количество сотрудников в запасе
+
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                      TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник
+WHERE     (TableСотрудник.[дата увольнения] IS NULL) AND (TableСотрудник.статус >= 2)
+GROUP BY TableСпециальность.классификатор
+
+3. всего в запасе офицеров
+
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                      TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник INNER JOIN
+                      TableВоинскоеЗвание ON TableВоенныйБилет.[Воинское звание] = TableВоинскоеЗвание.id
+WHERE     (TableСотрудник.[дата увольнения] IS NULL) AND (TableСотрудник.статус >= 2) AND (TableВоинскоеЗвание.классификатор >= 3)
+GROUP BY TableСпециальность.классификатор
+
+4. всего в запасе мичманов прапорщиков и т.д.
+
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                      TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник INNER JOIN
+                      TableВоинскоеЗвание ON TableВоенныйБилет.[Воинское звание] = TableВоинскоеЗвание.id
+WHERE     (TableСотрудник.[дата увольнения] IS NULL) AND (TableСотрудник.статус >= 2) AND (TableВоинскоеЗвание.классификатор = 2)
+GROUP BY TableСпециальность.классификатор
+
+ 
+5. всего в запасе солдат
+
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                      TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник INNER JOIN
+                      TableВоинскоеЗвание ON TableВоенныйБилет.[Воинское звание] = TableВоинскоеЗвание.id
+WHERE     (TableСотрудник.[дата увольнения] IS NULL) AND (TableСотрудник.статус >= 2) AND (TableВоинскоеЗвание.классификатор = 1)
+GROUP BY TableСпециальность.классификатор
+
+6. всего в запасе солдат, прапорщиков с ограниченной годностью
+SELECT     TableСпециальность.классификатор, COUNT(TableСотрудник.id) AS Количество
+FROM         TableСотрудник INNER JOIN
+                      TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                      TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник INNER JOIN
+                      TableВоинскоеЗвание ON TableВоенныйБилет.[Воинское звание] = TableВоинскоеЗвание.id
+WHERE     (TableСотрудник.[дата увольнения] IS NULL) AND (TableСотрудник.статус >= 2) AND (TableВоинскоеЗвание.классификатор = 1) AND 
+                      (TableСотрудник.[категория годности] = 4)
+GROUP BY TableСпециальность.классификатор
+
+
+
+
+запрос с учетом возраста 
+
+(SELECT     COUNT(TableСотрудник.id) AS Количество, TableСотрудник.статус
+                       FROM          TableСотрудник INNER JOIN
+                                              TableСпециальность ON TableСотрудник.специальность = TableСпециальность.id INNER JOIN
+                                              TableВоенныйБилет ON TableСотрудник.id = TableВоенныйБилет.сотрудник INNER JOIN
+                                              TableВоинскоеЗвание ON TableВоенныйБилет.[Воинское звание] = TableВоинскоеЗвание.id
+                       WHERE      (TableСотрудник.датарождения >= @mind) AND (TableСотрудник.датарождения <= @maxd)
+                       GROUP BY TableСотрудник.статус) AS query_1
